@@ -9,12 +9,13 @@ import ozon from "/img/ozon.png"
 import yam from "/img/yandex.png"
 import school from "/img/school.png"
 import student from "/img/stutend.png"
+import video from "/video/02165.mp4"
 import bg_card from "/img/bg-card.png"
 import woman from "/img/woman.png"
 import wb_ozon from "/img/wb_ozon.png"
 import man from "/img/man.png"
 import group from "/img/group.svg"
-import { AnimatePresence, motion, useInView, useMotionValueEvent, useScroll } from "framer-motion"
+import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "framer-motion"
 import { useEffect, useRef, useState } from "react"
 import RoughCircle from "./RoughCircle"
 
@@ -89,7 +90,6 @@ function App() {
   const [isWhiteHeader, setIsWhiteHeader] = useState(false);
 
   const whiteSectionRef = useRef<HTMLElement>(null);
-  const darkSectionRef = useRef<HTMLElement>(null);
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     const previous = scrollY.getPrevious() ?? 0;
@@ -117,28 +117,12 @@ function App() {
   });
   const [isPerfectStarted, setIsPerfectStarted] = useState(false);
 
-  const heroRef = useRef<HTMLElement>(null);
-  const footerRef = useRef<HTMLElement>(null);
-    
-  const [headerTheme, setHeaderTheme] = useState<'transparent' | 'white' | 'dark'>('transparent');
-
   useMotionValueEvent(scrollY, "change", (latest) => {
     const previous = scrollY.getPrevious() ?? 0;
 
     if (latest > previous && latest > 150) setHeaderHidden(true);
     else setHeaderHidden(false);
 
-    const whiteTop = whiteSectionRef.current?.offsetTop ?? 0;
-    const darkTop = darkSectionRef.current?.offsetTop ?? 0;
-    const footerTop = footerRef.current?.offsetTop ?? 0;
-
-    if (latest < 100) {
-      setHeaderTheme('transparent');
-    } else if (latest >= whiteTop - 50 && latest < darkTop - 50) {
-      setHeaderTheme('white');
-    } else if (latest >= darkTop - 50) {
-      setHeaderTheme('dark');
-    }
   });
 
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -200,7 +184,7 @@ function App() {
           <div className="relative flex w-[1100px] h-[950px] flex-col items-center justify-center text-center overflow-hidden">
             <img src={group} className="absolute inset-0 w-full h-full object-cover object-bottom z-10"/>
             <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover z-0">
-              <source src="/video/0216(5).mp4" type="video/mp4" />
+              <source src={video} type="video/mp4" />
             </video>
             <div className="relative text-center flex flex-col justify-between gap-100">
               <motion.div
