@@ -1,0 +1,37 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sf-medium: Sf-medium, sans-serif;
+  --font-sf-regular: Sf-regular, sans-serif;
+  --color-background: #FFFFFF;
+}
+
+::selection {
+    background: #0000003b;
+    color: white;
+}
+
+main {
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+}
+
+body {
+  scroll-behavior: smooth;
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+}
+
+@font-face {
+  font-family: "sf-regular";
+  src:
+    url("/fonts/Regular.woff2") format("woff2"),
+    url("/fonts/Regular.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "sf-medium";
+  src:
+    url("/fonts/Regular.woff2") format("woff2"),
+    url("/fonts/Regular.otf") format("opentype");
+}
