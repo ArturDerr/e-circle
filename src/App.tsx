@@ -1,9 +1,12 @@
 import logo from "/img/logo.svg"
+import logo_sm from "/img/logo_small.png"
 import lin from "/img/lin.png"
 import done from "/img/done.png"
 import arrow from "/img/arrow.png"
 import tap from "/img/tap.png"
+import qr2 from "/img/qr2.png"
 import wb from "/img/wb.png"
+import tg from "/img/telegram-communication-chat-interaction-network-connection-svgrepo-com.svg"
 import bg_footer from "/img/bg-footer.svg"
 import ozon from "/img/ozon.png"
 import yam from "/img/yandex.png"
@@ -20,14 +23,6 @@ import { useEffect, useRef, useState } from "react"
 import RoughCircle from "./RoughCircle"
 import ContactForm from "./ContactForm"
 
-type FormData = {
-  company: string;
-  name: string;
-  city: string;
-  phone: string;
-  email: string;
-};
-
 const navLinks = [
   { label: "Преимущества", href: "#advantages" },
   { label: "Как это работает", href: "#how" },
@@ -38,21 +33,6 @@ const navLinks = [
 function App() {
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const [agreed, setAgreed] = useState<boolean>(false);
-
-  const [formData, setFormData] = useState<FormData>({
-    company: '',
-    name: '',
-    city: '',
-    phone: '',
-    email: ''
-  });
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-  
   const [canScrollLeft, setCanScrollLeft] = useState<boolean>(false);
   const [canScrollRight, setCanScrollRight] = useState<boolean>(true);
 
@@ -90,6 +70,8 @@ function App() {
   const [isWhiteHeader, setIsWhiteHeader] = useState(false);
   
   const [isAtTop, setIsAtTop] = useState(true);
+  const [isLogoBig, setIsLogoBig] = useState(true);
+
 
   const whiteSectionRef = useRef<HTMLElement>(null);
   const howItWorksRef = useRef<HTMLElement>(null); 
@@ -104,6 +86,8 @@ function App() {
     } else {
       setHeaderHidden(false);
     }
+
+    setIsLogoBig(latest < 5);
 
     const white1 = whiteSectionRef.current?.offsetTop || 0;
     const dark2 = howItWorksRef.current?.offsetTop || 0;
@@ -124,6 +108,8 @@ function App() {
 
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
+  const [isHolding, setIsHolding] = useState(false);
+
   return (
     <body className="font-sf-regular bg-white">
       <motion.header 
@@ -134,12 +120,12 @@ function App() {
         animate={headerHidden ? "hidden" : "visible"}
         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
         className={`fixed top-0 ${isMenuOpen ? "border-none py-[0px]" : isAtTop 
-            ? "bg-transparent py-[10px] border-b border-[#2C2C2C] text-white" 
+            ? "bg-transparent py-[10px] text-white" 
             : isWhiteHeader 
               ? "bg-white text-black py-[10px]" 
               : "bg-[#131313] text-white py-[10px]" } left-0 right-0 z-[420] transition-colors duration-500 items-center px-[19px] flex flex-row justify-between 
           ${isAtTop 
-            ? "bg-transparent border-b border-[#2C2C2C] text-white" 
+            ? "bg-transparent text-white" 
             : isWhiteHeader 
               ? "bg-white text-black" 
               : "bg-[#131313] text-white" 
@@ -149,7 +135,10 @@ function App() {
           <img 
             src={logo} 
             style={{ filter: isWhiteHeader ? "invert(1)" : "none" }} 
-            className={` cursor-pointer w-[85px] h-[50px] transition-all ${isMenuOpen ? "hidden" : "flex"} duration-500"`}
+            className={`cursor-pointer transition-all duration-500 
+              ${isMenuOpen ? "hidden" : "flex"}
+              ${isLogoBig ? "w-[140px] h-[80px]" : "w-[85px] h-[50px]"}
+            `}
           />
         </div>
 
@@ -178,13 +167,14 @@ function App() {
           })}
         </div>
 
-        <div className={`hidden lg:flex px-4 py-2 cursor-pointer transition-all duration-200 rounded-lg
+        <a href="https://t.me/tru_blog" className={`hidden lg:flex py-3 px-4 cursor-pointer transition-all duration-200 rounded-lg
           ${isWhiteHeader ? "bg-black text-white hover:bg-black/70" : "bg-white text-black hover:bg-white/70"}`}
         >
-          <p className="font-sf-regular">Купить</p>
-        </div>
+            <p className="font-sf-medium mr-2">Telegram</p>
+            <img src={tg} className="w-5"/>
+        </a>
       <div 
-        className="lg:hidden fixed top-[28px] right-[49px] z-[120] flex flex-col gap-1 cursor-pointer"
+        className="lg:hidden fixed top-[28px] right-[29px] z-[120] flex flex-col gap-1 cursor-pointer"
         onClick={() => setIsMenuOpen(prev => !prev)}
       >
         <span className={`w-6 h-[2px] transition-all ${isWhiteHeader ? "bg-black" : "bg-white"} ${isMenuOpen ? "bg-white" : isWhiteHeader ? "bg-black" : "bg-white"} ${isMenuOpen ? "rotate-45 translate-y-[6px]" : ""}`} />
@@ -198,7 +188,7 @@ function App() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 pl-6 pt-6 bg-[#161615] z-[305] flex flex-col items-start gap-4"
+            className="fixed inset-0 px-6 pt-6 bg-[#161615] z-[305] flex flex-col items-start gap-4"
           >
             {navLinks.map((link, idx) => (
               <a
@@ -224,11 +214,7 @@ function App() {
       </AnimatePresence>
       <section className="bg-[#161615] px-4"> 
         <div className="min-h-screen flex items-center flex-col justify-center">
-          <div className="relative flex w-full max-w-[1100px] aspect-square md:aspect-[12/9.7] flex-col items-center justify-center text-center overflow-hidden">
-            <img 
-              src={group} 
-              className="absolute w-[1100px] h-[880px] object-cover object-top z-10"
-            />
+          <div className="relative flex w-full max-w-[1100px] aspect-[4/5] md:aspect-[12/9.7] flex-col items-center justify-center text-center overflow-hidden">
             <video 
               autoPlay 
               loop 
@@ -238,19 +224,15 @@ function App() {
             >
               <source src={video} type="video/mp4" />
             </video>
-            <div className="relative text-center flex flex-col justify-between gap-100">
-              <motion.div
-                initial={{ opacity: 0, y: -80 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1, ease: "easeOut" }}
-                className="relative text-center flex flex-col justify-between gap-100"
-              >
-                <div className="flex justify-center mix-blend-difference items-center flex-col z-20 mr-60">
+
+            <div className="relative z-10 flex flex-col items-center text-center gap-8 md:gap-20 px-2">
+
+               <div className="flex justify-center items-center mb-60 md:mb-0 flex-col z-10 md:mr-60">
                   <motion.h1
                     initial={{ opacity: 0, y: -60 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 1, delay: 0.2 }}
-                    className="text-white text-[20px] font-sf-medium md:text-[65px] mix-blend-difference"
+                    className="text-white text-[36px] md:text-[65px] font-sf-medium leading-tight"
                   >
                     Идеальный круг
                   </motion.h1>
@@ -259,22 +241,25 @@ function App() {
                     initial={{ opacity: 0, y: -60 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 1, delay: 0.4 }}
-                    className="font-sf-medium ml-50 text-[20px] text-white md:text-[65px] leading-8 mix-blend-difference"
+                    className="text-white mt-[-10px] text-[36px] md:text-[65px] font-sf-medium leading-tight md:ml-50"
                   >
                     — с первой кнопки
                   </motion.h1>
+
                 </div>
 
                 <motion.p
                   initial={{ opacity: 0, y: -40 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 1, delay: 0.6 }}
-                  className="mt-6 text-[20px] leading-6 font-sf-regular text-white mix-blend-difference"
+                  className="mt-4 md:mt-66 text-[20px] md:text-[20px] mb-6 md:mb-10 leading-6 font-sf-regular text-white"
                 >
-                  Первый электрический <br />циркуль-линейка
+                  Первый электрический <br className="hidden md:block" />
+                  циркуль-линейка
                 </motion.p>
-              </motion.div>
+
             </div>
+
           </div>
           <div className="hidden lg:flex flex-row justify-between z-40 px-10 items-center gap-6 absolute bottom-10 w-full">
             <div className="flex flex-row items-center gap-4">
@@ -289,9 +274,15 @@ function App() {
               </div>
 
               <div className="border border-white rounded-full px-5 py-3 flex items-center gap-2 cursor-pointer hover:bg-white/10 transition-all">
+                <img src={yam} className="w-6 h-5"/>
+                <p className="text-white text-[16px]">Купить на Яндекс.Маркете</p>
+              </div>
+
+              <div className="border border-white rounded-full px-5 py-3 flex items-center gap-2 cursor-pointer hover:bg-white/10 transition-all">
                 <img src={wb} className="w-5 h-5"/>
                 <p className="text-white text-[16px]">Купить на Wildberries</p>
               </div>
+
             </div>
             <p className="text-white font-sf-regular text-[20px] leading-6 max-w-[320px]">
               Точность, скорость и удобство для школы, творчества и работы.
@@ -351,12 +342,11 @@ function App() {
             </div>
             <div className="h-[720px] w-full rounded-[20px] py-4 px-6 bg-[#F0F0F0]/53 relative overflow-hidden">
               <p className="text-black text-[17px] relative z-10">Циркуль E-circle</p>
-              
               <div className="h-full flex items-center justify-center">
                 <RoughCircle 
                   targetPercent={100} 
                   isPerfect={true} 
-                  startTrigger={isPerfectStarted} 
+                  isHolding={isHolding}
                 />
               </div>
               <AnimatePresence>
@@ -365,14 +355,17 @@ function App() {
                     initial={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.6, ease: "easeInOut" }}
-                    className="absolute inset-0 z-20 flex items-center justify-center backdrop-blur-md bg-white/10"
+                    className="absolute inset-0 z-20 flex items-end justify-center mb-10 bg-white/10"
                   >
                     <motion.button 
                       initial={{ scale: 0.9, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
-                      whileTap={{ scale: 0.55 }}
-                      onClick={() => setIsPerfectStarted(true)}
-                      className="font-sf-regular text-[18px] cursor-pointer py-6 px-8 rounded-[12px] text-white bg-black shadow-2xl transition-all"
+                      onMouseDown={() => setIsHolding(true)}
+                      onMouseUp={() => setIsHolding(false)}
+                      onMouseLeave={() => setIsHolding(false)}
+                      onTouchStart={() => setIsHolding(true)}
+                      onTouchEnd={() => setIsHolding(false)}
+                      className="font-sf-regular text-[18px] hover:bg-black/80 cursor-pointer py-6 px-8 rounded-[12px] text-white bg-black shadow-2xl transition-all"
                     >
                       Попробовать
                     </motion.button>
@@ -385,19 +378,21 @@ function App() {
         <div className="flex flex-col px-5 md:px-10 pt-7 justify-between gap-[100px]">
           <div className="border-black/10 flex flex-row justify-between gap-auto border-t">
             <div className="flex flex-col md:flex-row items-left justify-between gap-auto w-full">
-              <p className="font-sf-regular text-[24px] mt-6 flex leading-7">Купите нашу продукцию <br/> на маркетплейсах</p>
-              <div className="flex flex-col md:flex-row items-left text-center mt-7 justify-between gap-2">
-                <div className="rounded-[10px] gap-3 border-[#9313F2] border items-center flex text-center h-4 py-8 px-10 text-[#9313F2] hover:bg-[#9313F2] hover:text-white transition-all duration-300 cursor-pointer">
-                  <img src={wb} className="w-[22px] h-[22px] transition-all flex duration-300 brightness-100 group-hover:brightness-0 group-hover:invert" /> 
-                  <p className="font-medium flex">Купить на Wildberries</p>
+              <p className="font-sf-regular w-0 md:w-200 text-[24px] mt-6 flex leading-7">Купите нашу продукцию <br/> на маркетплейсах</p>              
+              <div className="flex flex-col mt-10 md:mt-10 md:flex-row gap-3 w-full">
+                <div className="w-full h-[64px] rounded-[10px] border border-[#9313F2] flex items-center justify-center gap-3 text-[#9313F2] hover:bg-[#9313F2] hover:text-white transition-all duration-300 cursor-pointer">
+                  <img src={wb} className="w-[22px] h-[22px]" />
+                  <p className="font-medium text-center">Купить на Wildberries</p>
                 </div>
-                <div className="rounded-[10px] gap-3 items-center flex text-center h-4 py-8 px-15 bg-[#357DFF] hover:bg-[#216dfa] transition-colors duration-300 cursor-pointer">
-                  <img src={ozon} className="w-[22px] h-[22px]"/>
-                  <p className="text-white font-medium">Купить на OZON</p>
+
+                <div className="w-full h-[64px] rounded-[10px] bg-[#357DFF] flex items-center justify-center gap-3 text-white hover:bg-[#216dfa] transition-colors duration-300 cursor-pointer">
+                  <img src={ozon} className="w-[22px] h-[22px]" />
+                  <p className="font-medium text-center">Купить на OZON</p>
                 </div>
-                <div className="rounded-[10px] gap-3 items-center flex text-center h-4 py-8 px-10 bg-[#FFE23B] hover:bg-[#E6CC35] transition-colors duration-300 cursor-pointer">
-                  <img src={yam} className="w-[27px] h-[22px]"/>
-                  <p className="text-black font-medium">Купить на Яндекс Маркете</p>
+
+                <div className="w-full h-[64px] rounded-[10px] bg-[#FFE23B] flex items-center justify-center gap-3 text-black hover:bg-[#E6CC35] transition-colors duration-300 cursor-pointer">
+                  <img src={yam} className="w-[27px] h-[22px]" />
+                  <p className="font-medium text-center">Купить на Яндекс Маркете</p>
                 </div>
               </div>
             </div>
@@ -405,20 +400,20 @@ function App() {
         </div>
       </section>
       <section id="how" ref={howItWorksRef} className="bg-[#131313] justify-between gap-40 mt-30 pb-50 flex flex-col w-full rounded-t-[40px]">
-        <div className="flex flex-col md:flex-row px-5 md:px-10 pt-7 justify-between gap-[100px]">
+        <div className="flex flex-col px-5 md:px-10 pt-7 justify-between gap-[100px]">
           <div className="flex flex-row justify-between gap-auto w-full">
-            <p className="font-sf-regular text-[35px] md:text-[42px] mt-6 leading-11 text-white sticky top-[80px] self-start">
+            <p className="font-sf-regular text-[35px] md:text-[42px] mt-6 leading-11 text-white ">
               Как это <br/>работает
             </p>          
           </div>
-          <div className="w-full mt-4 flex flex-col justify-between gap-3">
+          <div className="w-full mt-4 flex flex-col md:flex-row justify-between gap-3">
             <div className="h-[300px] w-full rounded-[12px] p-6 flex flex-col justify-between bg-white/6 relative overflow-hidden">
               <p className="text-white font-sf-regular flex text-[32px] leading-8">Соедини одно <br/> с другим</p>
-              <div className="w-full justify-between flex flex-row">
+              <div className="w-full justify-between items-center flex flex-row">
                 <p className="text-white/40 font-sf-regular flex text-[20px]">
                   Просто соедини части циркуля
                 </p>
-                <img src={arrow} className="w-[29px]"/>
+                <img src={arrow} className="w-[29px] rotate-0 md:rotate-270"/>
               </div>
             </div>
             <div className="h-[300px] w-full rounded-[12px] p-6 flex flex-col justify-between bg-[#357DFF] relative overflow-hidden">
@@ -428,7 +423,7 @@ function App() {
                 <p className="text-white/40 font-sf-regular flex text-[20px]">
                   Используй встроенную линейку
                 </p>
-                <img src={arrow} className="w-[29px]"/>
+                <img src={arrow} className="w-[29px] rotate-0 md:rotate-270"/>
               </div>
             </div>
             <div className="h-[300px] w-full rounded-[12px] p-6 flex flex-col justify-between bg-white/6 relative overflow-hidden">
@@ -457,36 +452,36 @@ function App() {
                 <p className="text-white font-sf-regular flex text-[32px]">
                   Школьник
                 </p>
-                <img src={school} className="w-[35px] flex mt-3 h-[35px]" />
               </div>
               <p className="text-white/40 text-[20px] w-65 leading-6">Чтобы чертеж был гордостью, а не мучением. Выше оценка, меньше стресса</p>
+              <img src={school} className="w-[75px] flex h-[75px]" />
             </div>
             <div className="border-white/10 w-full py-5 flex flex-col md:flex-row gap-15 md:gap-0 justify-between border-t relative overflow-hidden">
               <div className="flex flex-row justify-between gap-5">
                 <p className="text-white font-sf-regular flex text-[32px]">
                   Студент
                 </p>
-                <img src={student} className="w-[35px] flex mt-3 h-[35px]" />
               </div>
               <p className="text-white/40 text-[20px] w-65 leading-6">Точные чертежи, меньше исправлений, выше баллы и спокойнее сессия</p>
+              <img src={student} className="w-[75px] flex h-[75px]" />
             </div>
             <div className="border-white/10 w-full py-5 flex flex-col md:flex-row gap-15 md:gap-0 justify-between border-t relative overflow-hidden">
               <div className="flex flex-row justify-between gap-5">
                 <p className="text-white font-sf-regular flex text-[32px]">
                   Родитель
                 </p>
-                <img src={woman} className="w-[35px] flex mt-3 h-[35px]" />
               </div>
               <p className="text-white/40 text-[20px] w-65 leading-6">Чтобы подарить ребенку не просто циркуль, а уверенность и лучший результат</p>
+              <img src={woman} className="w-[75px] flex mt-3 h-[75px]" />
             </div>
             <div className="border-white/10 w-full py-5 flex flex-col md:flex-row gap-15 md:gap-0 justify-between border-t relative overflow-hidden">
               <div className="flex flex-row justify-between gap-5">
                 <p className="text-white font-sf-regular flex text-[32px]">
                   Художник
                 </p>
-                <img src={man} className="w-[35px] mt-3 flex h-[35px]" />
               </div>
               <p className="text-white/40 text-[20px] w-65 leading-6">Когда важна каждая линия.  Инструмент, который даёт контроль над формой и позволяет сосредоточиться на творчестве</p>
+              <img src={man} className="w-[75px] mt-3 flex h-[75px]" />
             </div>
           </div>
         </div>
@@ -498,7 +493,7 @@ function App() {
                 src={arrow} 
                 alt="Prev"
                 onClick={() => canScrollLeft && handleScroll("left")}
-                className={`w-[40px] h-[40px] md:w-[29px] md:h-[29px] rotate-90 transition-all duration-300 ${
+                className={`w-[30px] h-[30px] md:w-[29px] md:h-[29px] rotate-90 transition-all duration-300 ${
                   canScrollLeft ? "cursor-pointer opacity-100" : "opacity-20 grayscale"
                 }`}
               />
@@ -506,7 +501,7 @@ function App() {
                 src={arrow} 
                 alt="Next"
                 onClick={() => canScrollRight && handleScroll("right")}
-                className={`w-[40px] h-[40px] md:w-[29px] md:h-[29px] rotate-270 transition-all duration-300 ${
+                className={`w-[30px] h-[30px] md:w-[29px] md:h-[29px] rotate-270 transition-all duration-300 ${
                   canScrollRight ? "cursor-pointer opacity-100" : "opacity-20 grayscale"
                 }`}
               />
@@ -516,41 +511,47 @@ function App() {
             ref={scrollRef}
             className="w-full flex flex-row gap-3 overflow-x-auto no-scrollbar pb-10"
           >
-            <div className="min-w-[400px] h-[400px] rounded-[12px] p-6 flex flex-col justify-between bg-white/5 flex-shrink-0">
+            <div className="min-w-[280px] md:min-w-[400px] h-[400px] rounded-[12px] p-6 flex flex-col justify-between bg-white/5 flex-shrink-0">
             </div>
-            <div className="min-w-[400px] h-[400px] rounded-[12px] p-6 flex flex-col justify-between bg-white/5 flex-shrink-0">
+            <div className="min-w-[280px] md:min-w-[400px] h-[400px] rounded-[12px] p-6 flex flex-col justify-between bg-white/5 flex-shrink-0">
             </div>
-            <div className="min-w-[400px] h-[400px] rounded-[12px] p-6 flex flex-col justify-between bg-white/5 flex-shrink-0">
+            <div className="min-w-[280px] md:min-w-[400px] h-[400px] rounded-[12px] p-6 flex flex-col justify-between bg-white/5 flex-shrink-0">
             </div>
-            <div className="min-w-[400px] h-[400px] rounded-[12px] p-6 flex flex-col justify-between bg-white/5 flex-shrink-0">
+            <div className="min-w-[280px] md:min-w-[400px] h-[400px] rounded-[12px] p-6 flex flex-col justify-between bg-white/5 flex-shrink-0">
             </div>
-            <div className="min-w-[400px] h-[400px] rounded-[12px] p-6 flex flex-col justify-between bg-white/5 flex-shrink-0">
+            <div className="min-w-[280px] md:min-w-[400px] h-[400px] rounded-[12px] p-6 flex flex-col justify-between bg-white/5 flex-shrink-0">
             </div>
-            <div className="min-w-[400px] h-[400px] rounded-[12px] p-6 flex flex-col justify-between bg-white/5 flex-shrink-0">
+            <div className="min-w-[280px] md:min-w-[400px] h-[400px] rounded-[12px] p-6 flex flex-col justify-between bg-white/5 flex-shrink-0">
             </div>
-            <div className="min-w-[400px] h-[400px] rounded-[12px] p-6 flex flex-col justify-between bg-white/5 flex-shrink-0">
+            <div className="min-w-[280px] md:min-w-[400px] h-[400px] rounded-[12px] p-6 flex flex-col justify-between bg-white/5 flex-shrink-0">
             </div>
-            <div className="min-w-[400px] h-[400px] rounded-[12px] p-6 flex flex-col justify-between bg-white/5 flex-shrink-0">
+            <div className="min-w-[280px] md:min-w-[400px] h-[400px] rounded-[12px] p-6 flex flex-col justify-between bg-white/5 flex-shrink-0">
             </div>
-            <div className="min-w-[400px] h-[400px] rounded-[12px] p-6 flex flex-col justify-between bg-white/5 flex-shrink-0">
+            <div className="min-w-[280px] md:min-w-[400px] h-[400px] rounded-[12px] p-6 flex flex-col justify-between bg-white/5 flex-shrink-0">
             </div>
           </div>
         </div>
-        <div className="flex flex-col px-5 md:px-10 pt-7 justify-between gap-[100px]">
-          <div className="border-white/10 flex flex-col md:flex-row justify-between gap-auto border-t">
-            <div className="flex flex-col md:flex-row items-left justify-between gap-auto w-full">
-              <div className="flex flex-col mt-10">
+        <div className="flex flex-col px-5 md:px-10 pt-7 justify-between">
+          <div className="border-white/10 flex flex-col md:flex-row justify-between border-t">
+            <div className="flex flex-col md:flex-row items-left justify-between w-full">
+              <div className=" flex-col hidden md:flex mt-10">
                 <img src={wb_ozon} className="w-[299px]"/>
                 <p className="font-sf-regular text-[20px] text-white mt-9 flex leading-7">Вы можете приобрести нашу продукцию<br/> на маркетплейсах OZON и Wildberries.</p>
               </div>
-              <div className="flex flex-col mt-20 md:mt-0 md:flex-row items-center justify-between gap-2">
-                <div className="rounded-[10px] gap-3 w-full border-white border items-center flex text-center h-4 py-8 px-10 text-white hover:bg-[white] hover:text-black transition-all duration-300 cursor-pointer">
-                  <img src={wb} className="w-[22px] h-[22px] transition-all duration-300 brightness-100 group-hover:brightness-0 group-hover:invert" /> 
-                  <p className="font-medium">Купить на Wildberries</p>
+              <div className="flex flex-col md:flex-row gap-3 w-full">
+                <div className="w-full h-[64px] rounded-[10px] border border-white flex items-center justify-center gap-3 text-white hover:bg-white hover:text-black transition-all duration-300 cursor-pointer">
+                  <img src={wb} className="w-[22px] h-[22px]" />
+                  <p className="font-medium text-center">Купить на Wildberries</p>
                 </div>
-                <div className="rounded-[10px] gap-3 w-full items-center flex text-center h-4 py-8 px-15 bg-white hover:bg-white/80 text-black transition-colors duration-300 cursor-pointer">
-                  <img src={ozon} className="w-[22px] h-[22px]"/>
-                  <p className="text-black font-medium">Купить на OZON</p>
+
+                <div className="w-full h-[64px] rounded-[10px] bg-[#357DFF] flex items-center justify-center gap-3 text-white hover:bg-[#216dfa] transition-colors duration-300 cursor-pointer">
+                  <img src={ozon} className="w-[22px] h-[22px]" />
+                  <p className="font-medium text-center">Купить на OZON</p>
+                </div>
+
+                <div className="w-full h-[64px] rounded-[10px] bg-[#FFE23B] flex items-center justify-center gap-3 text-black hover:bg-[#E6CC35] transition-colors duration-300 cursor-pointer">
+                  <img src={yam} className="w-[27px] h-[22px]" />
+                  <p className="font-medium text-center">Купить на Яндекс Маркете</p>
                 </div>
               </div>
             </div>
@@ -614,27 +615,33 @@ function App() {
         <div className="w-full h-[660px] absolute z-[-10px] overflow-hidden">
           <img 
             src={bg_footer} 
-            className="w-full h-full object-cover object-top" 
+            className="w-full hidden md:flex h-full object-cover object-top" 
             alt="Background Footer"
           />
         </div>  
         <div className="flex flex-col px-5 md:px-10 pt-7 justify-between z-10 gap-[100px]">
           <div className="flex flex-col md:flex-row justify-between gap-auto w-full">
             <div className="flex flex-col justify-between gap-12">
-              <img src={logo} className="w-30 flex md:hidden justify-start"/>
+              <img src={logo_sm} className="w-30 flex md:hidden justify-start"/>
               <p className="font-sf-regular text-[35px] md:text-[42px] mt-6 leading-11 text-white">Идеальный круг <br/>— с первой кнопки</p>
-              <div className="flex flex-col w-full md:flex-row items-center justify-between gap-2">
-                <div className="rounded-[10px] gap-3 w-full border-white border items-center flex text-center h-4 py-8 px-10 text-white hover:bg-[white] hover:text-black transition-all duration-300 cursor-pointer">
-                  <img src={wb} className="md:w-[22px] h-[22px] transition-all duration-300 brightness-100 group-hover:brightness-0 group-hover:invert" /> 
-                  <p className="font-medium">Купить на Wildberries</p>
-                </div>
-                <div className="rounded-[10px] gap-3 w-full items-center flex text-center h-4 py-8 px-15 bg-white hover:bg-white/80 text-black transition-colors duration-300 cursor-pointer">
-                  <img src={ozon} className="w-[22px] h-[22px]"/>
-                  <p className="text-black font-medium">Купить на OZON</p>
+              <div className="flex flex-col md:flex-row items-left text-center mt-7 justify-between gap-2">
+                <div className="flex flex-col md:flex-row gap-3 w-full">
+                  <div className="w-full h-[64px] rounded-[10px] border border-white flex items-center justify-center gap-3 text-white hover:bg-white hover:text-black transition-all duration-300 cursor-pointer">
+                    <img src={wb} className="w-[22px] h-[22px]" />
+                    <p className="font-medium text-center">Купить на Wildberries</p>
+                  </div>
+                  <div className="w-full h-[64px] rounded-[10px] bg-[#357DFF] flex items-center justify-center gap-3 text-white hover:bg-[#216dfa] transition-colors duration-300 cursor-pointer">
+                    <img src={ozon} className="w-[22px] h-[22px]" />
+                    <p className="font-medium text-center">Купить на OZON</p>
+                  </div>
+                  <div className="w-full h-[64px] rounded-[10px] bg-[#FFE23B] flex items-center justify-center gap-3 text-black hover:bg-[#E6CC35] transition-colors duration-300 cursor-pointer">
+                    <img src={yam} className="w-[27px] h-[22px]" />
+                    <p className="font-medium text-center">Купить на Яндекс Маркете</p>
+                  </div>
                 </div>
               </div>
             </div>
-            <img src={logo} className="w-30 justify-start hidden md:flex mb-25"/>
+            <img src={logo_sm} className="w-45 h-25 justify-start hidden md:flex mb-25"/>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
             <div className="flex flex-col gap-2">
@@ -651,16 +658,18 @@ function App() {
             </div>
             <div className="flex flex-col gap-2">
               <h4 className="text-white hover:text-white text-[16px] mb-2 cursor-pointer">Контакты</h4>
-              <p className="text-white/40 hover:text-white transition-colors cursor-pointer">Email для общих вопросов</p>
-              <p className="text-white/40 hover:text-white transition-colors cursor-pointer">Email для оптовых закупок</p>
+              <p className="text-white/40 hover:text-white transition-colors cursor-pointer">Email</p>
+              <a href="https://t.me/tru_blog" className="text-white/40 hover:text-white transition-colors cursor-pointer">Telegram</a>
+              <p className="text-white/40 hover:text-white transition-colors cursor-pointer">ВКонтакте</p>
             </div>
-            <div className="flex flex-col items-start md:items-end justify-end">
+            <div className="flex flex-col md:flex-row items-start md:items-end justify-end">
+              <img src={qr2} className="flex md:absolute mb-14 w-50 h-50 rounded-lg"/>
               <a href="mailto:email@example.ru" className="text-[27px] md:text-[32px] text-white font-sf-medium underline leading-none">
                 e-circle@example.ru
               </a>
             </div>
           </div>
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center text-[14px] text-white/40 border-t border-white/5 pt-6">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center text-[14px] text-white/40 border-t border-white/5">
             <p>E-circle</p>
             <div className="flex flex-col md:flex-row gap-10">
               <a href="#" className="hover:text-white underline transition-colors">Политику конфиденциальности</a>

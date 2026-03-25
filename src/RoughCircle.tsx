@@ -1,14 +1,17 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { motion, animate, useInView } from 'framer-motion';
+import { motion, animate, useInView, useMotionValue, useAnimationFrame } from 'framer-motion';
 
 interface DrawingCircleProps {
   targetPercent: number;
   isPerfect?: boolean;
   startTrigger?: boolean;
+    isHolding?: boolean; 
+
 }
 
 const DrawingCircle: React.FC<DrawingCircleProps> = ({ 
   targetPercent, 
+  isHolding,
   isPerfect = false, 
   startTrigger = false 
 }) => {
@@ -21,20 +24,32 @@ const DrawingCircle: React.FC<DrawingCircleProps> = ({
 
   const shouldStart = isPerfect ? startTrigger : isInView;
 
+  const progress = useMotionValue(0);
+
   useEffect(() => {
-    if (shouldStart) {
-      const controls = animate(0, targetPercent, {
-        duration: 2.5,
-        ease: "easeInOut",
-        onUpdate: (value) => setDisplayCount(Math.floor(value)),
-      });
-      return () => controls.stop();
+    if (!isPerfect) {
+      if (shouldStart) {
+        const controls = animate(0, targetPercent, {
+          duration: 2.5,
+          ease: "easeInOut",
+          onUpdate: (value) => setDisplayCount(Math.floor(value)),
+        });
+        return () => controls.stop();
+      }
     }
-  }, [shouldStart, targetPercent]);
+  }, [shouldStart, targetPercent, isPerfect]);
+
+  useAnimationFrame((t, delta) => {
+    if (isPerfect && isHolding) {
+      const next = Math.min(progress.get() + delta / 2000, 1);
+      progress.set(next);
+      setDisplayCount(Math.floor(next * 100));
+    }
+  });
 
   return (
     <div ref={containerRef} className="relative flex items-center justify-center w-full h-full">
-      <svg viewBox="0 0 100 100" className="w-[450px] h-[450px] -rotate-90">
+      <svg viewBox="0 0 100 100" className="w-[260px] h-[260px] md:w-[450px] md:h-[450px] -rotate-90">
         <path
           d={isPerfect ? perfectPath : roughPath}
           fill="none"
@@ -48,13 +63,14 @@ const DrawingCircle: React.FC<DrawingCircleProps> = ({
           strokeWidth="0.9"
           strokeLinecap="round"
           initial={{ pathLength: 0 }}
-          animate={shouldStart ? { pathLength: 1 } : { pathLength: 0 }}
+          style={isPerfect ? { pathLength: progress } : {}}
+          animate={!isPerfect && shouldStart ? { pathLength: 1 } : {}}
           transition={{ duration: 2.5, ease: "easeInOut" }}
         />
       </svg>
 
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-[80px] font-sf-regular tracking-tighter leading-none">
+        <span className="text-[50px] md:text-[80px] font-sf-regular tracking-tighter leading-none">
           {displayCount}%
         </span>
       </div>
